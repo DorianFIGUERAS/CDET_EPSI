@@ -15,5 +15,5 @@ COPY . .
 # Copy the vscode launch configuration
 COPY ./.vscode /.vscode
  
-# Start the Uvicorn server using uv run
-CMD ["uv", "run", "python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start with gunicorn: 4 workers, debugpy on port 5678
+CMD ["uv", "run", "python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
