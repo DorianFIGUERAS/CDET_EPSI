@@ -1,0 +1,53 @@
+services:
+  # 1. FastAPI Backend
+  backend:
+    build:
+      context: ./fastapi-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
+    networks:
+      - app-network
+
+  # 2. Vite Frontend
+  frontend:
+    build:
+      context: ./vite-project
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # 3. Ollama (AI Engine)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+      # Uncomment the line below if you have an NVIDIA GPU and want to use it
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  ollama_data:
