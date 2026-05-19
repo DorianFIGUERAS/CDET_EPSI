@@ -11,6 +11,9 @@ RUN uv sync
  
 # Copy the application code
 COPY . .
+
+# Copy the vscode launch configuration
+COPY ./.vscode /.vscode
  
 # Start the Uvicorn server using uv run
 CMD ["uv", "run", "python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
